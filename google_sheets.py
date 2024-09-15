@@ -63,3 +63,25 @@ def write_sheet_data(values):
         valueInputOption='RAW', body=body).execute()
 
     print(f'{result.get("updatedCells")} cells updated.')
+
+def delete_row_from_google_sheets(row_index):
+    """Deletes a specific row from Google Sheets."""
+    service = authenticate_google_sheets()
+
+    request_body = {
+        'requests': [
+            {
+                'deleteDimension': {
+                    'range': {
+                        'sheetId': 0,  
+                        'dimension': 'ROWS',
+                        'startIndex': row_index - 1,  
+                        'endIndex': row_index
+                    }
+                }
+            }
+        ]
+    }
+
+    service.spreadsheets().batchUpdate(spreadsheetId=SPREADSHEET_ID, body=request_body).execute()
+    print(f'Row {row_index} deleted from Google Sheets.')

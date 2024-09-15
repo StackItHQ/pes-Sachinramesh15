@@ -83,3 +83,19 @@ def fetch_data():
             cur.execute("SELECT * FROM leads;")
             rows = cur.fetchall()
             return convert_data_for_json(rows)
+
+def delete_rows(lead_ids):
+    """Delete rows from the database based on lead_ids."""
+    with get_db_connection() as conn:
+        with conn.cursor() as cur:
+            if len(lead_ids) == 1:
+                cur.execute("""
+                    DELETE FROM leads
+                    WHERE lead_id = %s;
+                """, (list(lead_ids)[0],))
+            else:
+                cur.execute("""
+                    DELETE FROM leads
+                    WHERE lead_id IN %s;
+                """, (tuple(lead_ids),))
+            conn.commit()
