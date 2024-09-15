@@ -1,7 +1,6 @@
 from database import insert_data, create_table
 from google_sheets import read_sheet_data
 
-
 def sync_google_sheets_with_db():
     create_table()
 
@@ -15,7 +14,6 @@ def sync_google_sheets_with_db():
 
         insert_data(sheet_data)
         print("Data from Google Sheets inserted into PostgreSQL.")
-
 
 if __name__ == '__main__':
     sync_google_sheets_with_db()
