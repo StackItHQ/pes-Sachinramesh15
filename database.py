@@ -2,6 +2,8 @@ import os
 import psycopg2
 from contextlib import contextmanager
 from dotenv import load_dotenv
+from decimal import Decimal
+from datetime import date
 
 load_dotenv()
 
@@ -33,12 +35,12 @@ def get_db_connection():
 
 
 def create_table():
-    """Create a table in the database if it doesn't exist."""
+    """Create a table in the database with lead_id as the primary key."""
     with get_db_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
                 CREATE TABLE IF NOT EXISTS leads (
-                    id SERIAL PRIMARY KEY,
+                    lead_id INT PRIMARY KEY,  
                     client_name VARCHAR(255),
                     lead_status VARCHAR(50),
                     assigned_sales_rep VARCHAR(100),
@@ -49,13 +51,29 @@ def create_table():
 
 
 def insert_data(values):
-    """Insert data into the PostgreSQL database."""
+    """Insert or update data in the PostgreSQL database based on lead_id."""
     with get_db_connection() as conn:
         with conn.cursor() as cur:
             cur.executemany("""
-                INSERT INTO leads (client_name, lead_status, assigned_sales_rep, expected_value, close_date)
-                VALUES (%s, %s, %s, %s, %s);
+                INSERT INTO leads (lead_id, client_name, lead_status, assigned_sales_rep, expected_value, close_date)
+                VALUES (%s, %s, %s, %s, %s, %s)
+                ON CONFLICT (lead_id)  -- Handle conflict based on lead_id
+                DO UPDATE SET
+                    client_name = EXCLUDED.client_name,
+                    lead_status = EXCLUDED.lead_status,
+                    assigned_sales_rep = EXCLUDED.assigned_sales_rep,
+                    expected_value = EXCLUDED.expected_value,
+                    close_date = EXCLUDED.close_date;
             """, values)
+
+
+def convert_data_for_json(data):
+    """Convert Decimal and date objects in the data to serializable formats."""
+    return [
+        [float(value) if isinstance(value, Decimal) else value.strftime(
+            '%Y-%m-%d') if isinstance(value, date) else value for value in row]
+        for row in data
+    ]
 
 
 def fetch_data():
@@ -64,4 +82,4 @@ def fetch_data():
         with conn.cursor() as cur:
             cur.execute("SELECT * FROM leads;")
             rows = cur.fetchall()
-            return rows
+            return convert_data_for_json(rows)
