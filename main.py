@@ -11,7 +11,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-# ENDPOINT1: relect changes in gsheet to postgres
+# ENDPOINT1: reflect changes in gsheet to postgres
 
 @app.post("/sync_postgres")
 def update_postgres():
@@ -30,7 +30,7 @@ def update_postgres():
         raise HTTPException(
             status_code=500, detail=f"Error syncing data: {str(e)}")
     
-# ENDPOINT2: reflect changes from postgres to gsheet
+# ENDPOINT2: reflect changes in postgres to gsheet
 
 @app.post("/sync_gsheet")
 def update_gsheet():
