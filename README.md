@@ -63,7 +63,7 @@ All the best ✨.
   - The synchronization between Google Sheets and PostgreSQL is fully operational. Changes made in Google Sheets are reflected in PostgreSQL and vice versa, with real-time updates handled by PostgreSQL notifications.
 
 - **I have recorded a video showing it working and embedded it in the README** ▶️  
-  - [Insert Video Link Here]
+  - [View Video Demonstration](assets/super-join-clip.mp4)
 
 - **I have tested all the normal working cases** 😎  
   - Normal cases tested include:
